@@ -2,7 +2,7 @@
 #include "Arduino.h"
 
 double Input; //MEasured Current
-byte buttonPins[] = {SWITCH_PIN_MOS1, SWITCH_PIN_MOS2, BUTTON_PIN_SWAP};
+//byte buttonPins[] = {SWITCH_PIN_MOS1, SWITCH_PIN_MOS2, BUTTON_PIN_SWAP};
 shopper shopperMain(PWM_PIN_1, PWM_FREQ);
 shopper shopperBackup(PWM_PIN_2, PWM_FREQ);
 LED ledMos1(LED_PIN_MOS_1);
@@ -106,8 +106,8 @@ void loop()
   }
 
   ledMos1.switchOn();
-  ledMos2.switchOn();
-  ledSwap.switchOn();
+  //ledMos2.switchOn();
+  //ledSwap.switchOn();
   
   digitalWrite(13, HIGH);
   //Serial.println("main loop ");
