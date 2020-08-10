@@ -9,12 +9,12 @@
 #define mosfet1Pin 4
 #define mosfet2Pin 10
 
-#define LED_PIN_EN 0
-#define LED_PIN_MOS_1 1
-#define LED_PIN_MOS_2 2
+#define LED_PIN_EN 1
+#define LED_PIN_MOS_1 2
+#define LED_PIN_MOS_2 3
 
 #define SWITCH_PIN_MOS1 4
-#define SWITCH_PIN_MOS2 11
+#define SWITCH_PIN_MOS2 10
 #define BUTTON_PIN_SWAP 28
 
 #define PWM_FREQ 100000

@@ -9,14 +9,20 @@ LED::LED(byte pin)
 
 void LED::switchOn()
 {
-    status = 1;
-    digitalWrite(pin, HIGH);
+    if (status == 0)
+    {
+        status = 1;
+        digitalWrite(pin, HIGH);
+    }
 }
 
 void LED::switchOFf()
 {
-    status = 0;
-    digitalWrite(pin, status);
+    if (status == 1)
+    {
+        status = 0;
+        digitalWrite(pin, LOW);
+    }
 }
 
 void LED::changeState()
