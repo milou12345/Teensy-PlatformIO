@@ -9,7 +9,8 @@ Sensor::Sensor(byte pin, byte resolutionBit)
 
 void Sensor::init()
 {
-    pinMode(pin, INPUT);
+    pinMode(this->pin, INPUT);
+    analogReadResolution(this->pin);
     this->resolution = pow(2, resolutionBit);
     adcValue = 0;
     currentVal = 0;
@@ -20,7 +21,7 @@ double Sensor::getVoltageSensed()
 {
 
     adcValue = analogRead(pin);
-    voltageRead = map(adcValue, 0, resolution - 1, 0, VDD);
+    voltageRead = map(adcValue, 0, 4095, 0, 3300)/1000.0;
     return voltageRead;
 }
 

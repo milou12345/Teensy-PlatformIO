@@ -9,9 +9,10 @@ class shopper
 private:
     byte pwmPin;    // Pin für Ausgabe der PWM
     PID currentPID; //PID controller
+    byte dutyCyleMap;
 public:
     int freq;      // Frequenz in 1/s
-    byte dutyCyle; // 0-100
+    byte dutyCyle; // 0-100 
     double Setpoint, Output;
     double Kp, Ki, Kd;
     //double Input;

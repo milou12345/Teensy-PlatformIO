@@ -3,16 +3,17 @@
 LED::LED(byte pin)
 {
     this->pin = pin;
-    pinMode(pin, OUTPUT);
-    status = 0;
+    pinMode(this->pin, OUTPUT);
+    this->status = 0;
 }
+
 
 void LED::switchOn()
 {
-    if (status == 0)
+    if (this->status == 0)
     {
-        status = 1;
-        digitalWrite(pin, HIGH);
+        this->status = 1;
+        digitalWrite(this->pin, HIGH);
     }
 }
 

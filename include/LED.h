@@ -5,7 +5,7 @@ class LED
 {
 private:
     byte status;
-    bool pin;
+    byte pin;
 
 public:
     LED(byte pin);

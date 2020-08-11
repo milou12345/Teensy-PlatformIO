@@ -4,6 +4,9 @@ shopper::shopper(byte pwmPin, int freq)
 {
     this->pwmPin = pwmPin;
     this->freq = freq;
+    analogWriteFrequency(this->pwmPin, this->freq);
+    init();
+
 }
 
 void shopper::init()
@@ -15,16 +18,19 @@ void shopper::init()
     Output = 0;
     dutyCyle = 0;
 
-    currentPID.SetMode(AUTOMATIC);
+    //currentPID.SetMode(AUTOMATIC);
     //currentPID.SetResolution(MICROS);
     currentPID.SetSampleTime(SAMPLE_TIME);
-    analogWriteFrequency(pwmPin, freq);
+
+
 }
 
 void shopper::setDutyCyle(byte dutyCyle)
 {
     this->dutyCyle = dutyCyle;
-    analogWrite(pwmPin, dutyCyle);
+    dutyCyleMap=map(this->dutyCyle, 0, 100, 1, 255);
+
+    analogWrite(pwmPin, dutyCyleMap);
 }
 
 void shopper::PidCompute()
@@ -36,7 +42,7 @@ void shopper::PidCompute()
 }
 
 void shopper::PidInit(double *const &Input, double Setpoint,
-                      double Kp, double Ki, double Kd)
+    double Kp, double Ki, double Kd)
 {
     //this->Input = &Input;
     this->Setpoint = Setpoint;
