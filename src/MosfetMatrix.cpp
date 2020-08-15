@@ -1,11 +1,12 @@
 #include "MosfetMatrix.h"
 
-MosfetMatrix::MosfetMatrix(byte pin1, byte pin2)
+MosfetMatrix::MosfetMatrix(byte pin1, byte pin2, byte pin3, byte pin4)
 {
 
     mos1 = Mosfet(pin1);
     mos2 = Mosfet(pin2);
-
+    mos2 = Mosfet(pin3);
+    mos2 = Mosfet(pin4);
     switch (mos1.getState())
     {
     case 0:
