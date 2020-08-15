@@ -10,7 +10,7 @@ private:
 public:
     LED(byte pin);
     void switchOn();
-    void switchOFf();
+    void switchOff();
     void changeState();
     bool getStatus();
 };

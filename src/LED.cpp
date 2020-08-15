@@ -7,7 +7,6 @@ LED::LED(byte pin)
     this->status = 0;
 }
 
-
 void LED::switchOn()
 {
     if (this->status == 0)
@@ -17,7 +16,7 @@ void LED::switchOn()
     }
 }
 
-void LED::switchOFf()
+void LED::switchOff()
 {
     if (status == 1)
     {
@@ -31,7 +30,7 @@ void LED::changeState()
     switch (status)
     {
     case 1:
-        switchOFf();
+        switchOff();
 
         break;
 

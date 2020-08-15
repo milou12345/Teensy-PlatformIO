@@ -10,9 +10,11 @@ private:
     byte pwmPin;    // Pin für Ausgabe der PWM
     PID currentPID; //PID controller
     byte dutyCyleMap;
+   // double *Input;
+
 public:
     int freq;      // Frequenz in 1/s
-    byte dutyCyle; // 0-100 
+    byte dutyCyle; // 0-100
     double Setpoint, Output;
     double Kp, Ki, Kd;
     //double Input;
@@ -22,7 +24,7 @@ public:
     void init();
     void setDutyCyle(byte dutyCyle);
     void PidCompute();
-    void PidInit(double *const &Input, double Setpoint,
+    void PidInit(double *const Input, double Setpoint,
                  double Kp, double Ki, double Kd);
     void setSetpoint(double Setpoint);
     void setKp(double Kp);

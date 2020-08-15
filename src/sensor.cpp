@@ -21,14 +21,13 @@ double Sensor::getVoltageSensed()
 {
 
     adcValue = analogRead(pin);
-    voltageRead = map(adcValue, 0, 4095, 0, 3300)/1000.0;
+    voltageRead = map(adcValue, 0, 4095, 0, 3300) / 1000.0;
     return voltageRead;
 }
 
 double Sensor::getCurrentSensed()
 {
     adcValue = analogRead(pin);
-    voltageRead = map(adcValue, 0, resolution - 1, 0, VDD);
-    currentVal = map(voltageRead, 0, DCCT_MAX_VOLTAG, 0, DCCT_MAX_CURRENT);
+    currentVal = map(adcValue, 0, 4095, 0, 60000)/ 1000.0;
     return currentVal;
 }
