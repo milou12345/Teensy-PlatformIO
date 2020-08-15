@@ -19,30 +19,31 @@ MosfetMatrix::MosfetMatrix(byte pin1, byte pin2)
     }
 }
 
+/************************************************************
+ * Switch PS if either one of them is in a different state
+ *************************************************************/
 void MosfetMatrix::switchPS()
 {
-    if (mos1.getState()!=mos2.getState())
+    if (mos1.getState() != mos2.getState())
     {
-         switch (mos1.getState())
-    {
+        switch (mos1.getState())
+        {
 
-    case 0:
-        mos1.switchOn();
-        mos2.switchOff();
-        switchPosition = 1; //Standart PS
+        case 0:
+            mos1.switchOn();
+            mos2.switchOff();
+            switchPosition = 1; //Standart PS
 
-    case 1:
-        mos1.switchOff();
-        mos2.switchOn();
-        switchPosition = 0; //HotSwap PS
-        break;
+        case 1:
+            mos1.switchOff();
+            mos2.switchOn();
+            switchPosition = 0; //HotSwap PS
+            break;
 
-    default:
-        break;
+        default:
+            break;
+        }
     }
-    }
-    
-   
 }
 
 void MosfetMatrix::switchToPS1()
@@ -58,7 +59,6 @@ void MosfetMatrix::switchToPS2()
     mos2.switchOn();
     switchPosition = 0;
 }
-
 
 byte MosfetMatrix::getSwitchPos()
 {

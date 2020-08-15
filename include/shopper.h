@@ -7,20 +7,21 @@
 class shopper
 {
 private:
-    byte pwmPin;    // Pin für Ausgabe der PWM
-    PID currentPID; //PID controller
+    byte pwmPin; // Pin für Ausgabe der PWM
     byte dutyCyleMap;
-   // double *Input;
+    // double *Input;
 
 public:
     int freq;      // Frequenz in 1/s
     byte dutyCyle; // 0-100
     double Setpoint, Output;
     double Kp, Ki, Kd;
-    //double Input;
+    PID currentPID; //PID controller
 
+    /***********
+ * Methods
+ ***********/
     shopper(byte pwmPin, int freq);
-
     void init();
     void setDutyCyle(byte dutyCyle);
     void PidCompute();

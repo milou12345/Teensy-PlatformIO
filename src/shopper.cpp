@@ -45,7 +45,7 @@ void shopper::PidInit(double *const Input, double Setpoint,
     //  this->Input = Input;
 
     currentPID.Init(Input, &this->Output, &this->Setpoint, this->Kp, this->Ki, this->Kd, DIRECT);
-    currentPID.SetMode(AUTOMATIC);
+    currentPID.SetMode(MANUAL); // PID is Off !
     //currentPID.SetResolution(MICROS);
     currentPID.SetSampleTime(SAMPLE_TIME);
 }
@@ -68,4 +68,14 @@ void shopper::setKi(double Ki)
 void shopper::setKd(double Kd)
 {
     this->Kd = Kd;
+}
+
+void shopper::setOutput(double Output)
+{
+    this->Output = Output;
+}
+
+double shopper::getOutput()
+{
+    return this->Output;
 }
