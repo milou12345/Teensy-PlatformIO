@@ -5,18 +5,6 @@ MosfetMatrix::MosfetMatrix(byte pin1, byte pin2)
 
     mos1 = Mosfet(pin1);
     mos2 = Mosfet(pin2);
-
-    switch (mos1.getState())
-    {
-    case 0:
-        switchPosition = 0;
-        break;
-    case 1:
-        switchPosition = 1;
-        break;
-    default:
-        break;
-    }
 }
 
 /************************************************************
@@ -26,16 +14,20 @@ void MosfetMatrix::switchPS()
 {
     if (mos1.getState() != mos2.getState())
     {
+
         switch (mos1.getState())
         {
 
         case 0:
             mos1.switchOn();
+
             mos2.switchOff();
             switchPosition = 1; //Standart PS
+            break;
 
         case 1:
             mos1.switchOff();
+            Serial.println("Mos2 switched on");
             mos2.switchOn();
             switchPosition = 0; //HotSwap PS
             break;
@@ -58,6 +50,12 @@ void MosfetMatrix::switchToPS2()
     mos1.switchOff();
     mos2.switchOn();
     switchPosition = 0;
+}
+
+void MosfetMatrix::switchOff()
+{
+    mos1.switchOff();
+    mos2.switchOff();
 }
 
 byte MosfetMatrix::getSwitchPos()

@@ -29,4 +29,7 @@
 #define KP 1
 #define KI 1
 #define KD 0
-#define SETPOINT 20
+#define SETPOINT 5
+
+#define DUTY_CYLE_STATIC 1
+#define DUTY_CYLE 50

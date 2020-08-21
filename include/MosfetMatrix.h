@@ -17,7 +17,7 @@ public:
     void switchPS();
     void switchToPS1();
     void switchToPS2();
-    
+    void switchOff();
     byte getSwitchPos();
     bool getHotSwapEnable();
     void setHotSwapEnable();

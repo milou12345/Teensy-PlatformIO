@@ -10,6 +10,7 @@ private:
     byte pwmPin; // Pin für Ausgabe der PWM
     byte dutyCyleMap;
     // double *Input;
+    void writePwm();
 
 public:
     int freq;      // Frequenz in 1/s
@@ -31,6 +32,8 @@ public:
     void setKp(double Kp);
     void setKi(double Ki);
     void setKd(double Kd);
+    double getOutput();
+    void setOutput(double Output);
     //void currentControler(double Input, &Output, &Setpoint, Kp, Ki, Kd)
 };
 

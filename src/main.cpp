@@ -64,7 +64,7 @@ void loop()
     buttonHSEnable.update();
     buttonManualControl.update();
 
-    Input = currentSensor.getCurrentSensed(); // Measure Current
+    //Input = currentSensor.getCurrentSensed(); // Measure Current
 
     //Aktivate HotSwap with switch
     /* if (digitalRead(hotSwapEnablePin) == true)
@@ -83,6 +83,7 @@ void loop()
     }
     else if (buttonManualControl.risingEdge() && (manualControl == true)) // Manual control off
     {
+
         manualControl = false;
         Serial.println("Manual Control Deactivated!!");
     }
@@ -99,11 +100,6 @@ void loop()
         ledHotSwapEnable.switchOff();
         Serial.println("HS Controll deactivated!");
     }
-    if (buttonSwap.risingEdge() && (swap == false))
-    {
-        swap = true;
-        Serial.println("Manual Swap!");
-    }
 
     /*****************************************************
      * Manual control over IGBT/MOSFET switch status.
@@ -117,41 +113,72 @@ void loop()
         ledManualControl.switchOn();
         hotSwapControl = false;
 
-        if (switchMos1.pressed())
+        if (switchMos1.fallingEdge())
         {
-            Serial.println("Switch1 pressed");
+            Serial.println("Switch1 On");
             ledMos1.switchOn();
             matrix.mos1.switchOn();
-            shopperMain.PidCompute();
-        }
-        else if (switchMos1.released())
-        {
+#if (DUTY_CYLE_STATIC)
+            shopperMain.setDutyCyle(DUTY_CYLE);
+#endif
 
+#if !(DUTY_CYLE_STATIC)
+            shopperMain.currentPID.SetMode(AUTOMATIC);
+#endif
+        }
+        else if (switchMos1.risingEdge())
+        {
+            Serial.println("Switch1 Off");
             ledMos1.switchOff();
             matrix.mos1.switchOff();
+            shopperMain.currentPID.SetMode(MANUAL);
+            shopperMain.setDutyCyle(0);
         }
 
-        if (switchMos2.pressed())
+        if (switchMos2.fallingEdge())
         {
+            Serial.println("Switch2 On");
 
             ledMos2.switchOn();
             matrix.mos2.switchOn();
-            //shopperBackup.PidCompute();
+#if (DUTY_CYLE_STATIC)
+            shopperBackup.setDutyCyle(DUTY_CYLE);
+#endif
+#if !(DUTY_CYLE_STATIC)
+            shopperBackup.currentPID.SetMode(AUTOMATIC);
+#endif
         }
-        else if (switchMos2.released())
+        else if (switchMos2.risingEdge())
         {
-
+            Serial.println("Switch2 Off");
             ledMos2.switchOff();
             matrix.mos2.switchOff();
+            shopperBackup.currentPID.SetMode(MANUAL);
+            shopperBackup.setDutyCyle(0);
         }
 
         if (buttonSwap.risingEdge())
         {
+            Serial.println("Manual Swap!");
+            swap = true;
             matrix.switchPS();
-        }
-        if (swap == true)
-        {
-            matrix.switchPS();
+            if (matrix.getSwitchPos() == 0)
+            {
+                Serial.println("Swaped Pid to Backup");
+                shopperMain.currentPID.SetMode(MANUAL);
+                shopperMain.setDutyCyle(0);
+                shopperBackup.currentPID.SetMode(AUTOMATIC);
+            }
+            else if (matrix.getSwitchPos() == 1)
+            {
+                Serial.println("Swaped Pid to main");
+                shopperBackup.currentPID.SetMode(MANUAL);
+                shopperBackup.setDutyCyle(0);
+                shopperMain.currentPID.SetMode(AUTOMATIC);
+            }
+            {
+                /* code */
+            }
         }
     }
     else if (manualControl == false)
@@ -161,6 +188,11 @@ void loop()
         matrix.mos2.switchOff();
         ledMos1.switchOff();
         ledMos2.switchOff();
+        shopperMain.currentPID.SetMode(MANUAL);
+        shopperBackup.currentPID.SetMode(MANUAL);
+        //  shopperBackup.setDutyCyle(0);
+        shopperMain.setDutyCyle(0);
+        shopperBackup.setDutyCyle(0);
     }
 
     /****************************************
@@ -190,22 +222,24 @@ void loop()
 
     if (matrix.mos1.getState() == 1)
     {
-        shopperMain.currentPID.SetMode(AUTOMATIC);
+        // shopperMain.currentPID.SetMode(AUTOMATIC);
     }
     else if (matrix.mos1.getState() == 0)
+
     {
-        shopperMain.currentPID.SetMode(MANUAL);
-        shopperMain.setDutyCyle(0);
+        // Serial.println("Mos1 state 0");
+        // shopperMain.currentPID.SetMode(MANUAL);
+        // Serial.println("Duty cyle 0");
     }
 
     if (matrix.mos2.getState() == 1)
     {
-        shopperBackup.currentPID.SetMode(AUTOMATIC);
+        //   shopperBackup.currentPID.SetMode(AUTOMATIC);
     }
     else if (matrix.mos2.getState() == 0)
     {
-        shopperBackup.currentPID.SetMode(MANUAL);
-        shopperBackup.setDutyCyle(0);
+        // shopperBackup.currentPID.SetMode(MANUAL);
+        // shopperBackup.setDutyCyle(0);
     }
 
     /*************************************************
@@ -214,6 +248,14 @@ void loop()
 
     shopperMain.PidCompute();
     shopperBackup.PidCompute();
+    /*  if (currentSensor.getCurrentSensed() >= 20)
+
+    {
+        shopperMain.setDutyCyle(0);
+        shopperBackup.setDutyCyle(0);
+        matrix.switchOff();
+    } */
+
     /* Serial.print("Output: ");
     Serial.println(shopperMain.Output); */
     // Serial.print("Input: ");

@@ -1,33 +1,33 @@
 #include "mosfet.h"
-Mosfet::Mosfet(byte pin) 
+Mosfet::Mosfet(byte pin)
 {
-    this->pin=pin;
+    this->pin = pin;
     init();
 }
 
-Mosfet::Mosfet() 
+Mosfet::Mosfet()
 {
 }
 
-void Mosfet::init() 
+void Mosfet::init()
 {
     pinMode(pin, OUTPUT);
     switchOff();
 }
 
-void Mosfet::switchOn() 
+void Mosfet::switchOn()
 {
-    digitalWrite(pin, HIGH);  
-    state=1; 
+    digitalWrite(pin, HIGH);
+    state = 1;
 }
 
-void Mosfet::switchOff() 
+void Mosfet::switchOff()
 {
-    digitalWrite(pin, LOW); 
-    state=0;
+    digitalWrite(pin, LOW);
+    state = 0;
 }
 
-byte Mosfet::getState() 
+byte Mosfet::getState()
 {
-    return state;
+    return this->state;
 }

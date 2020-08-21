@@ -22,16 +22,19 @@ void shopper::setDutyCyle(byte dutyCyle)
 {
     this->dutyCyle = dutyCyle;
     dutyCyleMap = map(this->dutyCyle, 0, 100, 1, 255);
-
-    analogWrite(pwmPin, dutyCyleMap);
+    analogWrite(this->pwmPin, dutyCyleMap);
 }
 
 void shopper::PidCompute()
 {
 
     currentPID.Compute();
-    //Wirte pwm
-    analogWrite(pwmPin, Output);
+
+    if (currentPID.GetMode() == 1)
+    {
+
+        analogWrite(this->pwmPin, this->Output);
+    }
 }
 
 void shopper::PidInit(double *const Input, double Setpoint,
@@ -78,4 +81,23 @@ void shopper::setOutput(double Output)
 double shopper::getOutput()
 {
     return this->Output;
+}
+
+void shopper::writePwm()
+{
+    //Serial.println(currentPID.GetMode());
+    /*  switch (currentPID.GetMode())
+    {
+    case 0:
+        analogWrite(pwmPin, dutyCyleMap);
+        Serial.println("Wirte DutyCyle oitput");
+        break;
+    case 1:
+        Serial.println("Wirte PID oitput");
+        analogWrite(pwmPin, Output);
+
+    default:
+        analogWrite(pwmPin, 0);
+        break;
+    } */
 }
