@@ -57,7 +57,7 @@ void setup()
 
 void loop()
 {
-    //analogWrite(33, 100);
+    //analogWrite(33, 100);Output
     buttonSwap.update();
     switchMos1.update();
     switchMos2.update();
@@ -221,6 +221,12 @@ void loop()
         }
     }
 
+    /*****************************************************
+ *  Set the Pid of the shopper which is connected
+ * the magnet as active and set the pwm to the
+ * Output of the Pid
+ * 
+ *****************************************************/
     if (matrix.mos1.getState() == 1)
     {
         // shopperMain.currentPID.SetMode(AUTOMATIC);
