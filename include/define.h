@@ -26,10 +26,11 @@
 #define HOT_SWAP_LIM 50
 #define SAMPLE_TIME 1
 //Shopper
-#define KP 1
-#define KI 1
+#define KP 0.11466
+#define KI 1.7371
 #define KD 0
-#define SETPOINT 5
+#define SETPOINT 50
 
-#define DUTY_CYLE_STATIC 1
-#define DUTY_CYLE 50
+//#define DUTY_CYLE_STATIC 1
+#define PID_MODE 1
+#define DUTY_CYLE 20

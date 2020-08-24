@@ -64,13 +64,13 @@ void loop()
     buttonHSEnable.update();
     buttonManualControl.update();
 
-    //Input = currentSensor.getCurrentSensed(); // Measure Current
+    Input = currentSensor.getCurrentSensed(); // Measure Current
 
     //Aktivate HotSwap with switch
-    /* if (digitalRead(hotSwapEnablePin) == true)
-      hotSwapEnable = true;
-    if (hotSwapEnable == true)
-      digitalWrite(onboardLed, HIGH); */
+    if (digitalRead(hotSwapEnablePin) == true)
+    {
+        hotSwapControl = true;
+    }
 
     /***************************************************************
     * Register Button presses and Switches ans set flags
@@ -118,11 +118,12 @@ void loop()
             Serial.println("Switch1 On");
             ledMos1.switchOn();
             matrix.mos1.switchOn();
-#if (DUTY_CYLE_STATIC)
+#ifdef DUTY_CYLE_STATIC
+
             shopperMain.setDutyCyle(DUTY_CYLE);
 #endif
 
-#if !(DUTY_CYLE_STATIC)
+#ifdef PID_MODE
             shopperMain.currentPID.SetMode(AUTOMATIC);
 #endif
         }
