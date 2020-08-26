@@ -9,6 +9,8 @@ private:
 
 public:
     LED(byte pin);
+    LED();
+    void init();
     void switchOn();
     void switchOff();
     void changeState();

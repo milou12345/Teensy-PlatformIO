@@ -5,14 +5,13 @@ double Input, Output; //MEasured Current
 bool manualControl = false, hotSwapControl = false, swap = false;
 shopper shopperMain(PWM_PIN_1, PWM_FREQ);
 shopper shopperBackup(PWM_PIN_2, PWM_FREQ);
-LED ledMos1(LED_PIN_MOS_1);
-LED ledMos2(LED_PIN_MOS_2);
+
 LED ledManualControl(LED_PIN_MAN_EN);
 LED ledHotSwapEnable(LED_PIN_HS_EN);
-MosfetMatrix matrix(MOSFET_PIN_1, MOSFET_PIN_2);
+MosfetMatrix matrix(MOSFET_PIN_1, MOSFET_PIN_2, MOSFET_PIN_3, MOSFET_PIN_4, LED_PIN_MOS_1, LED_PIN_MOS_2);
 Sensor currentSensor(PIN_INPUT, 12);
-Button switchMos1 = Button();
-Button switchMos2 = Button();
+Button switchPS1 = Button();
+Button switchPS2 = Button();
 Button buttonSwap = Button();
 Button buttonHSEnable = Button();
 Button buttonManualControl = Button();
@@ -24,21 +23,21 @@ void setup()
     * Set up for die Switches and Buttons
     *************************************/
 
-    switchMos1.attach(SWITCH_PIN_MOS1, INPUT_PULLUP);
-    switchMos2.attach(SWITCH_PIN_MOS2, INPUT_PULLUP);
+    switchPS1.attach(SWITCH_PIN_MOS1, INPUT_PULLUP);
+    switchPS2.attach(SWITCH_PIN_MOS2, INPUT_PULLUP);
     buttonSwap.attach(BUTTON_PIN_SWAP, INPUT_PULLUP);
     buttonHSEnable.attach(BUTTON_PIN_HS_Enable, INPUT_PULLUP);
     buttonManualControl.attach(BUTTON_PIN_MANUAL_CONTROL, INPUT_PULLUP);
 
     buttonSwap.interval(5);
-    switchMos2.interval(5);
-    switchMos1.interval(5);
+    switchPS2.interval(5);
+    switchPS1.interval(5);
     buttonHSEnable.interval(5);
     buttonManualControl.interval(5);
 
     buttonSwap.setPressedState(LOW);
-    switchMos1.setPressedState(LOW);
-    switchMos2.setPressedState(LOW);
+    switchPS1.setPressedState(LOW);
+    switchPS2.setPressedState(LOW);
     buttonHSEnable.setPressedState(LOW);
     buttonManualControl.setPressedState(LOW);
 
@@ -57,20 +56,14 @@ void setup()
 
 void loop()
 {
-    //analogWrite(33, 100);Output
+
     buttonSwap.update();
-    switchMos1.update();
-    switchMos2.update();
+    switchPS1.update();
+    switchPS2.update();
     buttonHSEnable.update();
     buttonManualControl.update();
 
     Input = currentSensor.getCurrentSensed(); // Measure Current
-
-    //Aktivate HotSwap with switch
-    if (digitalRead(hotSwapEnablePin) == true)
-    {
-        hotSwapControl = true;
-    }
 
     /***************************************************************
     * Register Button presses and Switches ans set flags
@@ -91,7 +84,7 @@ void loop()
     if (buttonHSEnable.risingEdge() && (hotSwapControl == false)) // Hot-Swap on
     {
         hotSwapControl = true;
-        manualControl = false;
+
         Serial.println("HS Controll activated!");
     }
     else if (buttonHSEnable.risingEdge() && (hotSwapControl == false)) // Hot-Swap off
@@ -111,13 +104,11 @@ void loop()
     if (manualControl == true)
     {
         ledManualControl.switchOn();
-        hotSwapControl = false;
 
-        if (switchMos1.fallingEdge())
+        if (switchPS1.fallingEdge())
         {
             Serial.println("Switch1 On");
-            ledMos1.switchOn();
-            matrix.mos1.switchOn();
+            matrix.switchOnPS1();
 #ifdef DUTY_CYLE_STATIC
 
             shopperMain.setDutyCyle(DUTY_CYLE);
@@ -127,21 +118,20 @@ void loop()
             shopperMain.currentPID.SetMode(AUTOMATIC);
 #endif
         }
-        else if (switchMos1.risingEdge())
+        else if (switchPS1.risingEdge())
         {
             Serial.println("Switch1 Off");
-            ledMos1.switchOff();
-            matrix.mos1.switchOff();
+
+            matrix.switchOffPS1();
             shopperMain.currentPID.SetMode(MANUAL);
             shopperMain.setDutyCyle(0);
         }
 
-        if (switchMos2.fallingEdge())
+        if (switchPS2.fallingEdge())
         {
             Serial.println("Switch2 On");
 
-            ledMos2.switchOn();
-            matrix.mos2.switchOn();
+            matrix.switchOnPS2();
 #if (DUTY_CYLE_STATIC)
             shopperBackup.setDutyCyle(DUTY_CYLE);
 #endif
@@ -149,11 +139,10 @@ void loop()
             shopperBackup.currentPID.SetMode(AUTOMATIC);
 #endif
         }
-        else if (switchMos2.risingEdge())
+        else if (switchPS2.risingEdge())
         {
             Serial.println("Switch2 Off");
-            ledMos2.switchOff();
-            matrix.mos2.switchOff();
+            matrix.switchOffPS2();
             shopperBackup.currentPID.SetMode(MANUAL);
             shopperBackup.setDutyCyle(0);
         }
@@ -168,30 +157,37 @@ void loop()
                 Serial.println("Swaped Pid to Backup");
                 shopperMain.currentPID.SetMode(MANUAL);
                 shopperMain.setDutyCyle(0);
+#if (DUTY_CYLE_STATIC)
+                shopperBackup.setDutyCyle(DUTY_CYLE);
+#endif
+#if !(DUTY_CYLE_STATIC)
                 shopperBackup.currentPID.SetMode(AUTOMATIC);
+#endif
             }
             else if (matrix.getSwitchPos() == 1)
             {
                 Serial.println("Swaped Pid to main");
                 shopperBackup.currentPID.SetMode(MANUAL);
                 shopperBackup.setDutyCyle(0);
+
+#ifdef DUTY_CYLE_STATIC
+
+                shopperMain.setDutyCyle(DUTY_CYLE);
+#endif
+
+#ifdef PID_MODE
                 shopperMain.currentPID.SetMode(AUTOMATIC);
-            }
-            {
-                /* code */
+#endif
             }
         }
     }
     else if (manualControl == false)
     {
         ledManualControl.switchOff();
-        matrix.mos1.switchOff();
-        matrix.mos2.switchOff();
-        ledMos1.switchOff();
-        ledMos2.switchOff();
+        matrix.switchOff();
         shopperMain.currentPID.SetMode(MANUAL);
         shopperBackup.currentPID.SetMode(MANUAL);
-        //  shopperBackup.setDutyCyle(0);
+
         shopperMain.setDutyCyle(0);
         shopperBackup.setDutyCyle(0);
     }
@@ -202,51 +198,39 @@ void loop()
      * *************************************/
     if (hotSwapControl == true)
     {
+        Output = shopperMain.getOutput();
         ledHotSwapEnable.switchOn();
-        matrix.switchToPS1();
+        if (matrix.getSwitchPos() != 1)
+        {
+            matrix.switchToPS1();
+        }
 
         if ((currentSensor.getCurrentSensed() <= HOT_SWAP_LIM))
         {
+            Serial.println("Hot Swap event!");
+            Serial.println(currentSensor.getCurrentSensed());
+
             // Switch Mosfets for Hotswap
             matrix.switchToPS2();
-            ledMos2.switchOn();
-            ledMos1.switchOff();
 
             // PWM to 100% till current rises to wanted value
             do
             {
-                shopperBackup.setDutyCyle(100);
-            } while (currentSensor.getCurrentSensed() <= SETPOINT);
-            shopperBackup.setOutput(shopperMain.getOutput());
+                shopperBackup.setDutyCyle(DUTY_CYLE);
+                if (currentSensor.getCurrentSensed() >= SAFTEY_CURRENT)
+
+                {
+                    shopperMain.setDutyCyle(0);
+                    shopperBackup.setDutyCyle(0);
+                    matrix.switchOff();
+                    break;
+                }
+            } while (currentSensor.getCurrentSensed() <= 48);
+            //  shopperBackup.setOutput(Output);
+            shopperBackup.currentPID.SetMode(AUTOMATIC);
+            hotSwapControl = false;
+            ledHotSwapEnable.switchOff();
         }
-    }
-
-    /*****************************************************
- *  Set the Pid of the shopper which is connected
- * the magnet as active and set the pwm to the
- * Output of the Pid
- * 
- *****************************************************/
-    if (matrix.mos1.getState() == 1)
-    {
-        // shopperMain.currentPID.SetMode(AUTOMATIC);
-    }
-    else if (matrix.mos1.getState() == 0)
-
-    {
-        // Serial.println("Mos1 state 0");
-        // shopperMain.currentPID.SetMode(MANUAL);
-        // Serial.println("Duty cyle 0");
-    }
-
-    if (matrix.mos2.getState() == 1)
-    {
-        //   shopperBackup.currentPID.SetMode(AUTOMATIC);
-    }
-    else if (matrix.mos2.getState() == 0)
-    {
-        // shopperBackup.currentPID.SetMode(MANUAL);
-        // shopperBackup.setDutyCyle(0);
     }
 
     /*************************************************
@@ -255,18 +239,19 @@ void loop()
 
     shopperMain.PidCompute();
     shopperBackup.PidCompute();
-    /*  if (currentSensor.getCurrentSensed() >= 20)
+
+    if (currentSensor.getCurrentSensed() >= SAFTEY_CURRENT)
 
     {
         shopperMain.setDutyCyle(0);
         shopperBackup.setDutyCyle(0);
         matrix.switchOff();
-    } */
+    }
 
     /* Serial.print("Output: ");
     Serial.println(shopperMain.Output); */
-    // Serial.print("Input: ");
-    //Serial.println(Input);
+    Serial.print("Input: ");
+    Serial.println(Input);
     // shopperMain.setDutyCyle(15);
     //shopperBackup.setDutyCyle(15);
 }

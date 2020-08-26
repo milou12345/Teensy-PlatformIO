@@ -3,6 +3,15 @@
 LED::LED(byte pin)
 {
     this->pin = pin;
+    init();
+}
+
+LED::LED()
+{
+}
+
+void LED::init()
+{
     pinMode(this->pin, OUTPUT);
     this->status = 0;
 }
